@@ -119,3 +119,163 @@ db.products1.find({
 }, { name: 1, price: 1, storage: 1, _id: 0 });
 
 
+
+
+SATURDAY TASK
+
+TASK 1
+
+// SAPTAK SINGHA 22BCE0985
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MongoDBExample {
+    public static void main(String[] args) {
+        // Connect to MongoDB server running on localhost:27017
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+
+        // Access the 'sarurday' database
+        MongoDatabase database = mongoClient.getDatabase("sarurday");
+
+        // Access the 'saturday' collection
+        MongoCollection<Document> collection = database.getCollection("saturday");
+
+        // Create some documents (records)
+        Document doc1 = new Document("firstName", "John")
+                .append("lastName", "Doe")
+                .append("mark", 85)
+                .append("age", 25);
+
+        Document doc2 = new Document("firstName", "Jane")
+                .append("lastName", "Smith")
+                .append("mark", 92)
+                .append("age", 28);
+
+        Document doc3 = new Document("firstName", "Mike")
+                .append("lastName", "Johnson")
+                .append("mark", 78)
+                .append("age", 23);
+
+        Document doc4 = new Document("firstName", "Emily")
+                .append("lastName", "Brown")
+                .append("mark", 95)
+                .append("age", 26);
+
+        // Insert documents into the collection
+        collection.insertMany(List.of(doc1, doc2, doc3, doc4));
+
+        // Find the document(s) with the highest marks using cursor method
+        MongoCursor<Document> cursor = collection.find()
+                .sort(new Document("mark", -1))
+                .iterator();
+
+        List<Document> highestMarkDocuments = new ArrayList<>();
+        int highestMark = -1; // Initialize with a lower boundary for comparison
+
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+            int mark = doc.getInteger("mark");
+
+            if (mark == highestMark || highestMark == -1) {
+                highestMarkDocuments.add(doc);
+                highestMark = mark;
+            } else {
+                break; // Break the loop if we encounter a lower mark
+            }
+        }
+
+        cursor.close();
+
+        // Print the details of students with the highest marks
+        if (!highestMarkDocuments.isEmpty()) {
+            System.out.println("Student(s) with highest marks:");
+            for (Document doc : highestMarkDocuments) {
+                String firstName = doc.getString("firstName");
+                String lastName = doc.getString("lastName");
+                int mark = doc.getInteger("mark");
+
+                System.out.println("First Name: " + firstName);
+                System.out.println("Last Name: " + lastName);
+                System.out.println("Marks: " + mark);
+                System.out.println("-------------------------");
+            }
+        } else {
+            System.out.println("No documents found in the collection.");
+        }
+
+        // Close the MongoDB connection
+        mongoClient.close();
+    }
+}
+
+
+Task 2
+
+// SAPTAK SINGHA 22BCE0985
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.Document;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Filters;
+
+public class Task2 {
+    public static void main(String[] args) {
+
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+
+        MongoDatabase database = mongoClient.getDatabase("Student");
+        MongoCollection<Document> collection = database.getCollection("Student");
+
+        Document doc1 = new Document("name", "saptak")
+                            .append("salary", 14000)
+                            .append("age", 20);
+
+        Document doc2 = new Document("name", "Tapan")
+                            .append("salary", 20000)
+                            .append("age", 66);
+
+        Document doc3 = new Document("name", "sampa")
+                            .append("salary", 25000)
+                            .append("age", 52);
+
+        Document doc4 = new Document("name", "Rupam")
+                            .append("salary", 13000)
+                            .append("age", 25);
+
+        Document doc5 = new Document("name", "Alok")
+                            .append("salary", 21000)
+                            .append("age", 22);
+
+        Document doc6 = new Document("name", "Dev")
+                            .append("salary", 65000)
+                            .append("age", 37);
+
+        collection.insertMany(List.of(doc1, doc2, doc3, doc4, doc5, doc6));
+
+        Document lowest = collection.find(Filters.and(Filters.gte("age", 30), Filters.lte("age", 40)))
+                                             .sort(Sorts.ascending("salary"))
+                                             .first();
+
+
+        String name = lowest.getString("name");
+        int salary = lowest.getInteger("salary");
+        int age = lowest.getInteger("age");
+
+        System.out.println("Person with the lowest salary between ages 30 and 40:");
+        System.out.println(name + " with salary = " + salary + " and age = " + age);
+
+        mongoClient.close();
+    }
+}
