@@ -1,1 +1,121 @@
 
+TASK 18/06/2024
+NAME-SAPTAK SINGHA
+22BCE0985
+
+
+1.question-Find all products that have "white" as a color and a CPU speed greater than the average CPU speed of all products.
+answer-const avgCpuSpeed = db.products1.aggregate([
+    { $group: { _id: null, avgCpu: { $avg: "$spec.cpu" } } },
+    { $project: { _id: 0, avgCpu: 1 } }
+]).toArray()[0].avgCpu;
+
+db.products1.find({
+    color: "white",
+    "spec.cpu": { $gt: avgCpuSpeed }
+});
+
+2.Write a query to find a product whose cpu is not greater than or equal to 2 without using "$gte","$lte","$lt"($not)
+
+db.products1.find({
+    $nor: [
+        { "spec.cpu": { $eq: 2 } },
+        { "spec.cpu": { $gt: 2 } }
+    ]
+});
+
+3.Find products that do not have "white" as a color and are priced below 800
+
+db.products1.find({
+    $nor: [
+        { color: "white" },
+        { price: { $gte: 800 } }
+    ]
+});
+
+4.print the names of products whose screen is either greater than 7 or color is white
+
+db.products1.find({
+    $or: [
+        { "spec.screen": { $gt: 7 } },
+        { color: "white" }
+    ]
+}, { name: 1, _id: 0 });
+
+5.select products with cpu power not less than 2.66 nor more than 3.66
+
+db.products1.find({
+    $and: [
+        { "spec.cpu": { $not: { $lt: 2.66 } } },
+        { "spec.cpu": { $not: { $gt: 3.66 } } }
+    ]
+});
+
+6.select products with either white colour and storage not less than 128
+
+db.products1.find({
+    $or: [
+        { color: "white" },
+        { storage: { $not: { $lt: 128 } } }
+    ]
+});
+
+7.Find products that have either "white" or "black" as a color option and are priced below 800.
+
+db.products1.find({
+    $and: [
+        { $or: [{ color: "white" }, { color: "black" }] },
+        { price: { $lt: 800 } }
+    ]
+});
+
+8.Find products that do not have "gold" as a color and are priced below 700 or have a storage option of 512GB.
+
+db.products1.find({
+    $nor: [
+        { color: "gold" },
+        { $and: [
+            { price: { $gte: 700 } },
+            { storage: { $ne: 512 } }
+        ] }
+    ]
+});
+
+9.Write a query to find a product whose cpu is greater than or equal to 2 without using "$gte" ($or)
+
+db.products1.find({
+    $or: [
+        { "spec.cpu": { $gt: 2 } },
+        { "spec.cpu": { $not: { $lt: 2 } } }
+    ]
+});
+
+10.)Write a query to find a product whose colour is not black or white without using "$nin" ($not)
+
+db.products1.find({
+    $nor: [
+        { color: "black" },
+        { color: "white" }
+    ]
+});
+
+11.find the product cpu is not  less than 3 ,not isodate is ("2011-09-01")
+
+db.products1.find({
+    $nor: [
+        { "spec.cpu": { $lt: 3 } },
+        { releaseDate: ISODate("2011-09-01") }
+    ]
+});
+
+
+12.find name,price,storage if price is 699 or storage is 1024
+
+db.products1.find({
+    $or: [
+        { price: 699 },
+        { storage: 1024 }
+    ]
+}, { name: 1, price: 1, storage: 1, _id: 0 });
+
+
